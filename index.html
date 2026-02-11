@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Nuestra Historia</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --papel: #fdf5e6;
+        --oro: #d7af2b;
+        --cuero-oscuro: #582424;
+      }
+
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background: #0a0a0a;
+        overflow: hidden;
+        font-family: "Playfair Display", serif;
+      }
+
+      #pantalla-bloqueo {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #0a0a0a;
+        z-index: 5000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--oro);
+      }
+      .pregunta-box {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 40px;
+        border-radius: 20px;
+        border: 2px solid var(--oro);
+        text-align: center;
+        max-width: 400px;
+      }
+      .opcion-btn {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+        padding: 10px;
+        background: transparent;
+        border: 1px solid var(--oro);
+        color: white;
+        cursor: pointer;
+        font-family: inherit;
+        transition: 0.3s;
+      }
+      .opcion-btn:hover {
+        background: var(--oro);
+        color: black;
+      }
+
+      #overlay-cronometro {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 6000;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: var(--oro);
+        text-align: center;
+      }
+      .reloj-digital {
+        font-size: 3.5rem;
+        font-family: monospace;
+        margin: 20px 0;
+        text-shadow: 0 0 20px var(--oro);
+      }
+      #vista-estanteria {
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, #6e482f 0%, #1a110a 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: 0.8s;
+        position: relative;
+      }
+
+      #vista-estanteria::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("https://www.transparenttextures.com/patterns/stardust.png");
+        opacity: 0.3;
+        pointer-events: none;
+      }
+
+      .balda {
+        width: 85%;
+        max-width: 900px;
+        height: 20px;
+        background: #8a5b50;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        padding: 0 50px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .contenedor-libros {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+        transform: translateY(-20px);
+      }
+
+      .lomo {
+        width: 50px;
+        cursor: pointer;
+        transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        font-weight: bold;
+        font-size: 14px;
+        border-left: 5px solid rgba(0, 0, 0, 0.2);
+        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
+        border-radius: 3px 3px 0 0;
+      }
+
+      .lomo:hover {
+        transform: translateY(-20px) rotate(-3deg);
+        filter: brightness(1.3);
+        box-shadow: 10px 10px 25px rgba(0, 0, 0, 0.7);
+      }
+
+      .rojo {
+        background: #a13737;
+        color: var(--oro);
+        height: 222px;
+      }
+      .verde {
+        background: #1b4d3e;
+        color: #c5e961;
+        height: 220px;
+      }
+      .azul {
+        background: #577cca;
+        color: #ffffff;
+        height: 190px;
+      }
+      .dorado {
+        background: #e4bf44;
+        color: #6e1111d3;
+        height: 195px;
+      }
+      .cian {
+        background: #5cd1d3;
+        color: #1a1a1a;
+        height: 235px;
+      }
+      .decorativo {
+        width: 40px;
+        height: 180px;
+        background: rgb(116, 103, 142);
+        border-left: 5px solid rgba(0, 0, 0, 0.2);
+        border-radius: 3px 3px 0 0;
+      }
+
+      #vista-album {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, #6e482f 0%, #1a110a 100%);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      #vista-album::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("https://www.transparenttextures.com/patterns/stardust.png");
+        opacity: 0.3;
+        pointer-events: none;
+      }
+
+      @keyframes zoomLibro {
+        from {
+          transform: scale(0.2) translateY(200px);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1) translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .contenedor-libro-abierto {
+        width: 900px;
+        height: 600px;
+        position: relative;
+        perspective: 2500px;
+      }
+
+      .animar-entrada {
+        animation: zoomLibro 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+      }
+
+      .hoja {
+        box-shadow: 2px 2px 3px rgba(93, 91, 91, 0.174);
+        width: 450px;
+        height: 100%;
+        position: absolute;
+        right: 0;
+        transform-origin: left;
+        transform-style: preserve-3d;
+        transition: transform 1.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+        cursor: pointer;
+      }
+
+      .cara-delante,
+      .cara-detras {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        padding: 40px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: var(--papel)
+          url("https://www.transparenttextures.com/patterns/parchment.png");
+      }
+
+      .cara-delante {
+        box-shadow: inset 15px 0 30px rgba(0, 0, 0, 0.05);
+      }
+      .cara-detras {
+        transform: rotateY(180deg);
+        box-shadow: inset -15px 0 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .estilo-cuero {
+        background-image: url("https://www.transparenttextures.com/patterns/leather.png") !important;
+        border: 10px double var(--cuero-oscuro) !important;
+        color: black;
+        text-align: center;
+      }
+
+      .girada {
+        transform: rotateY(-180deg);
+      }
+
+      .marco-foto {
+        width: 90%;
+        height: 85%;
+        background: white;
+        padding: 12px 12px 60px 12px;
+        box-shadow: 5px 7px 30px rgba(0, 0, 0, 0.4);
+        border: 4px solid #efe9e9;
+        transition:
+          transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+          box-shadow 0.4s ease;
+        cursor: pointer;
+        position: relative;
+        z-index: 1;
+      }
+
+      .marco-foto:hover {
+        transform: scale(1.02) rotate(1deg);
+        box-shadow: 10px 15px 40px rgba(0, 0, 0, 0.5);
+        z-index: 10;
+      }
+
+      .marco-foto img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      #btn-volver {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(195, 175, 73, 0.7);
+        border: none;
+        padding: 12px 25px;
+        cursor: pointer;
+        font-weight: bold;
+        border-radius: 10px;
+        z-index: 2000;
+        display: none;
+      }
+      #btn-volver:hover {
+        background: rgba(195, 175, 73, 1);
+        box-shadow: 0 5px 15px rgba(195, 175, 73, 0.7);
+        transform: translateY(-2px);
+      }
+
+      .corazon-portada {
+        position: absolute;
+        font-size: 2.5rem;
+        color: var(--oro);
+        filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+        animation: latido 2s infinite ease-in-out;
+        pointer-events: none;
+      }
+
+      @keyframes latido {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.7;
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 1;
+        }
+      }
+
+      .washi {
+        position: absolute;
+        width: 80px;
+        height: 25px;
+        opacity: 0.8;
+        z-index: 10;
+      }
+      .w-top {
+        top: -2px;
+        left: -7%;
+        transform: rotate(-29deg);
+      }
+      .w-bottom {
+        bottom: 0px;
+        right: -8%;
+        transform: rotate(-32deg);
+      }
+
+      .brillo {
+        position: fixed;
+        top: -10%;
+        font-size: 20px;
+        pointer-events: none;
+        animation: caerBrillo 4s linear forwards;
+        z-index: 9999;
+      }
+      @keyframes caerBrillo {
+        to {
+          transform: translateY(110vh) translateX(50px) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      .cartelito {
+        position: absolute;
+        top: 180px;
+        left: 100%;
+        transform: translateX(-50%);
+        font-family: "Dancing Script", cursive;
+        color: var(--oro);
+        font-size: 1.4rem;
+        white-space: nowrap;
+        text-shadow: 0 0 10px rgba(215, 175, 43, 0.8);
+        animation: flotar 2s infinite ease-in-out;
+        writing-mode: horizontal-tb;
+        z-index: 100;
+      }
+
+      @keyframes flotar {
+        0%,
+        100% {
+          transform: translateX(-50%) translateY(0);
+        }
+        50% {
+          transform: translateX(-50%) translateY(-8px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="pantalla-bloqueo">
+      <div id="acceso-inicial" style="text-align: center">
+        <h1
+          style="
+            color: #ff4d4d;
+            font-family: &quot;Courier New&quot;, monospace;
+            font-size: 1.5rem;
+          "
+        >
+          ⚠️ AVISO DE SEGURIDAD ⚠️
+        </h1>
+        <p
+          style="
+            color: white;
+            margin: 20px 0;
+            font-family: sans-serif;
+            line-height: 1.6;
+          "
+        >
+          Acaba de acceder a una página de alto nivel de <br />
+          <strong style="color: var(--oro); font-size: 1.3rem">OXITOCINA</strong
+          ><br />
+          (La hormona del amor)
+        </p>
+        <p style="color: #aaa; font-size: 0.9rem">
+          ¿Estás preparado para el nivel de exposición?
+        </p>
+        <button
+          class="opcion-btn"
+          onclick="iniciarSistema()"
+          style="margin-top: 20px; padding: 10px 30px"
+        >
+          ESTOY PREPARADO
+        </button>
+      </div>
+
+      <div id="contenedor-preguntas" style="display: none">
+        <div class="pregunta-box">
+          <h2 id="txt-pregunta"></h2>
+          <div id="opciones-contenedor"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="overlay-cronometro">
+      <h1>NUESTRO PRIMER AÑO LLEGARA EN...</h1>
+      <div id="timer" class="reloj-digital">00d 00h 00m 00s</div>
+      <h1> ¡TE AMO! ❤</h1>
+      <button
+        class="opcion-btn"
+        onclick="
+          document.getElementById('overlay-cronometro').style.display = 'none'
+        "
+        style="width: auto; padding: 10px 40px"
+      >
+        VOLVER
+      </button>
+    </div>
+    <button id="btn-volver" onclick="cerrarAlbum()">✖ VOLVER</button>
+
+    <audio id="reproductor-musica" src=""></audio>
+
+    <div id="vista-estanteria">
+      <h1
+        style="
+          color: var(--oro);
+          margin-bottom: 250px;
+          font-family: &quot;Dancing Script&quot;;
+          font-size: 4rem;
+        "
+      >
+        Creando nuestra historia..
+      </h1>
+      <div class="balda">
+        <div class="contenedor-libros">
+          <div class="decorativo"></div>
+          <div class="lomo cian" onclick="abrirAlbum('familia')">FAMILIA</div>
+          <div class="lomo rojo" onclick="abrirAlbum('pandora')">
+            NUESTRO LUGAR..
+          </div>
+          <div class="lomo azul" onclick="abrirAlbum('momentos')">MOMENTOS</div>
+
+          <div class="decorativo"></div>
+          <div class="lomo dorado" onclick="abrirAlbum('besos')">KISS..</div>
+          <div class="lomo verde" onclick="abrirAlbum('granada')">
+            VIAJE A GRANADA
+          </div>
+          <div class="decorativo"></div>
+          <div
+            class="lomo"
+            style="
+              background: linear-gradient(to bottom, #5cb4ee, #0a435b);
+              color: #fff;
+              height: 210px;
+              position: relative;
+            "
+            onclick="verCronometro()"
+          >
+            <span class="cartelito">Continuará...</span>
+            NUESTRO FUTURO...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="vista-album">
+      <div class="envoltura-libro">
+        <div class="contenedor-libro-abierto" id="libro-actual"></div>
+      </div>
+    </div>
+
+    <script>
+      window.onload = () => {
+        document.getElementById("vista-estanteria").style.display = "none";
+      };
+
+      function iniciarSistema() {
+        document.getElementById("acceso-inicial").style.display = "none";
+        document.getElementById("contenedor-preguntas").style.display = "block";
+        cargarPregunta();
+      }
+
+      const misPreguntas = [
+        {
+          q: "Primera pregunta.. ¿Que día nos conocimos?",
+          ops: ["12", "22", "25"],
+          a: 2,
+        },
+        {
+          q: "Seguimos.. ¿Dónde fue nuestro primer beso?",
+          ops: ["Cine", "Sala Pandora", "Parque"],
+          a: 1,
+        },
+        {
+          q: "¿Recuerdas... nuestra fecha más importante?",
+          ops: ["17/04/2025", "12/09/2025", "25/04/2025"],
+          a: 0,
+        },
+      ];
+
+      let pIndex = 0;
+      function cargarPregunta() {
+        const p = misPreguntas[pIndex];
+        const txtPregunta = document.getElementById("txt-pregunta");
+        const cont = document.getElementById("opciones-contenedor");
+
+        cont.innerHTML = "";
+        txtPregunta.style.color = "var(--oro)";
+        txtPregunta.innerText = p.q;
+
+        p.ops.forEach((op, i) => {
+          const btn = document.createElement("button");
+          btn.className = "opcion-btn";
+          btn.innerText = op;
+
+          btn.onclick = () => {
+            if (i === p.a) {
+              if (pIndex < 2) {
+                pIndex++;
+                cargarPregunta();
+              } else {
+                Swal.fire({
+                  title: "¡ACCESO ESPECIAL CONCEDIDO!",
+                  text: "Has demostrado que lo sabes todo... ¿Quieres entrar por fin?",
+                  imageUrl:
+                    "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZuJmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3oz8xAFtqoNEAfRX7G/giphy.gif",
+                  imageWidth: 200,
+                  showCancelButton: true,
+                  allowOutsideClick: false,
+                  confirmButtonText: "¡SIIIIII, claro que sí!",
+                  cancelButtonText: "¡SÍ por 1000!",
+                  confirmButtonColor: "#d7af2b",
+                  cancelButtonColor: "#d7af2b",
+                }).then(() => {
+                  entrar();
+                });
+              }
+            } else {
+              txtPregunta.style.color = "red";
+              txtPregunta.innerText = "¡Error! Inténtalo de nuevo...";
+              cont.style.pointerEvents = "none";
+
+              setTimeout(() => {
+                txtPregunta.style.color = "var(--oro)";
+                txtPregunta.innerText = p.q;
+                cont.style.pointerEvents = "auto";
+              }, 1000);
+            }
+          };
+          cont.appendChild(btn);
+        });
+      }
+      function entrar() {
+        document.getElementById("pantalla-bloqueo").style.display = "none";
+        const estanteria = document.getElementById("vista-estanteria");
+        estanteria.style.display = "flex";
+        estanteria.style.opacity = "1";
+      }
+      function verCronometro() {
+        document.getElementById("overlay-cronometro").style.display = "flex";
+        const meta = new Date("2026-04-17T00:00:00").getTime();
+        const actualizar = () => {
+          const ahora = new Date().getTime();
+          const diff = meta - ahora;
+          const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const h = Math.floor(
+            (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+          );
+          const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const s = Math.floor((diff % (1000 * 60)) / 1000);
+          document.getElementById("timer").innerText =
+            `${d}d ${h}h ${m}m ${s}s`;
+        };
+        actualizar();
+        setInterval(actualizar, 1000);
+      }
+
+      const coloresWashi = [
+        "#ffadad88",
+        "#ffd6a588",
+        "#fdffb688",
+        "#caffbf88",
+        "#9bf6ff88",
+        "#a0c4ff88",
+        "#bdb2ff88",
+        "#ffc6ff88",
+      ];
+      function crearWashi(clase) {
+        const color =
+          coloresWashi[Math.floor(Math.random() * coloresWashi.length)];
+        return `<div class="washi ${clase}" style="background-color:${color}"></div>`;
+      }
+      const miBiblioteca = {
+        pandora: {
+          color: "#a13737",
+          titulo: "Nuestro lugar.. donde empezó todo..",
+          cancion: "music/lugar.mp3",
+          fotos: [
+            "lugar/foto1.jpeg",
+            "lugar/(1).jpeg",
+            "lugar/foto2.jpeg",
+            "lugar/foto3.jpeg",
+            "lugar/foto4.jpeg",
+            "lugar/foto5.jpeg",
+            "lugar/(3).jpeg",
+            "lugar/(2).jpeg",
+          ],
+          carta:
+            "El lugar de donde empezó todo, sin planearlo,sin pensarlo.. donde empezamos a escribir nuestra historia juntos. Gracias por cada momento en ese lugar, por cada risa, cada mirada, cada baile improvisado y cada beso robado. Siempre será nuestro rincón especial.",
+        },
+        granada: {
+          color: "#1b4d3e",
+          titulo: "Ayy .. Granada.. Granada.. de mi corazón 17",
+          cancion: "music/granada.mp3",
+          fotos: [
+           "granada/(1).jpeg",
+            "granada/(2).jpeg",
+            "granada/(3).jpeg",
+            "granada/(4).jpeg",
+            "granada/(5).jpeg",
+            "granada/(6).jpeg",
+            "granada/(7).jpeg",
+            "granada/(8).jpeg",
+            "granada/(9).jpeg",
+            "granada/(10).jpeg",
+            "granada/(11).jpeg",
+            "granada/(12).jpeg",
+            "granada/(13).jpeg",
+            "granada/(14).jpeg",
+            "granada/(15).jpeg",
+            "granada/(16).jpeg",
+            "granada/(17).jpeg",
+            "granada/(18).jpeg",
+            "granada/(19).jpeg",
+            "granada/(20).jpeg",
+            "granada/(21).jpeg",
+            "granada/(22).jpeg",
+            "granada/(23).jpeg",
+            "granada/(24).jpeg",
+            "granada/(25).jpeg",
+            "granada/(26).jpeg",
+            "granada/(27).jpeg",
+            "granada/(28).jpeg",
+            "granada/(29).jpeg",
+            "granada/(30).jpeg",
+            "granada/(31).jpeg",
+            "granada/(32).jpeg",
+            "granada/(33).jpeg",
+            "granada/(34).jpeg",
+            "granada/(35).jpeg",
+            "granada/(36).jpeg",
+            "granada/(37).jpeg",
+            "granada/(38).jpeg",
+            "granada/(39).jpeg",
+            "granada/(40).jpeg",
+            "granada/(41).jpeg",
+            "granada/(42).jpeg",
+            "granada/(43).jpeg",
+            "granada/(44).jpeg"
+          ],
+          carta:
+            "Granada fue mágica, pero lo más bonito de caminar por sus calles fue hacerlo de tu mano. No importa el destino, mientras el viaje sea contigo, siempre será mi lugar favorito.",
+        },
+        besos: {
+          color: "#e4bf44",
+          titulo:
+            "Todos los besos posibles.. la llave para abrir tu corazón ireesistible..",
+          cancion: "music/besos.mp3",
+          fotos: [
+            "besos/(1).jpeg",
+            "besos/(2).jpeg",
+            "besos/(3).jpeg",
+            "besos/(4).jpeg",
+            "besos/(5).jpeg",
+            "besos/(6).jpeg",
+            "besos/(7).jpeg",
+            "besos/(8).jpeg",
+            "besos/(9).jpeg",
+            "besos/(10).jpeg",
+            "besos/(11).jpeg",
+            "besos/(12).jpeg",
+            "besos/(13).jpeg",
+            "besos/(14).jpeg",
+            "besos/(15).jpeg",
+            "besos/(16).jpeg",
+            "besos/(17).jpeg",
+            "besos/(18).jpeg",
+            "besos/(19).jpeg",
+            "besos/(20).jpeg",
+            "besos/(21).jpeg",
+            "besos/(22).jpeg",
+            "besos/(23).jpeg",
+            "besos/(24).jpeg",
+            "besos/(25).jpeg",
+            "besos/(26).jpeg",
+            "besos/(27).jpeg",
+            "besos/(28).jpeg",
+            "besos/(29).jpeg",
+            "besos/(30).jpeg",
+            "besos/(31).jpeg",
+            "besos/(32).jpeg",
+            "besos/(33).jpeg",
+            "besos/(34).jpeg"
+          ],
+          carta:
+            "Dicen que hay besos que lo dicen todo,los mios dicen GRACIAS POR DEMOSTRARME TANTO ¡Por un millón de besos más!",
+        },
+        momentos: {
+          color: "#577cca",
+          titulo: "Cada momento contigo es especial..",
+          cancion: "music/momentos.mp3",
+          fotos: [
+            "momentos/(1).jpeg",
+            "momentos/(2).jpeg",
+            "momentos/(3).jpeg",
+            "momentos/(4).jpeg",
+            "momentos/(5).jpeg",
+            "momentos/(6).jpeg",
+            "momentos/(7).jpeg",
+            "momentos/(8).jpeg",
+            "momentos/(9).jpeg",
+            "momentos/(10).jpeg",
+            "momentos/(11).jpeg",
+            "momentos/(12).jpeg",
+            "momentos/(13).jpeg",
+            "momentos/(14).jpeg",
+            "momentos/(15).jpeg",
+            "momentos/(16).jpeg",
+            "momentos/(17).jpeg",
+            "momentos/(18).jpeg",
+            "momentos/(19).jpeg",
+            "momentos/(20).jpeg",
+              "momentos/(21).jpeg",
+              "momentos/(22).jpeg",
+              "momentos/(23).jpeg",
+              "momentos/(24).jpeg",
+              "momentos/(25).jpeg",
+              "momentos/(26).jpeg",
+              "momentos/(27).jpeg",
+              "momentos/(28).jpeg",
+              "momentos/(29).jpeg",
+              "momentos/(30).jpeg",
+              "momentos/(31).jpeg",
+              "momentos/(32).jpeg",
+              "momentos/(33).jpeg",
+              "momentos/(34).jpeg",
+              "momentos/(35).jpeg",
+              "momentos/(36).jpeg",
+              "momentos/(37).jpeg",
+              "momentos/(38).jpeg",
+              "momentos/(39).jpeg",
+              "momentos/(40).jpeg",
+              "momentos/(41).jpeg",
+              "momentos/(42).jpeg",
+              "momentos/(43).jpeg",
+              "momentos/(44).jpeg",
+              "momentos/(45).jpeg",
+              "momentos/(46).jpeg",
+              "momentos/(47).jpeg",
+              "momentos/(48).jpeg",
+              "momentos/(49).jpeg",
+              "momentos/(50).jpeg",
+              "momentos/(51).jpeg",
+              "momentos/(52).jpeg",
+              "momentos/(53).jpeg"
+          ],
+          carta:
+            "Cada una de estas fotos es un trocito de felicidad que me has regalado. Por las risas tontas, los días tranquilos y por cada segundo que haces especial, TE AMO.",
+        },
+        familia: {
+          color: "#5cd1d3",
+          titulo: "Simplemente los 3 juntitos.. y para que más..",
+          cancion: "music/familia.mp3",
+          fotos: [
+            "familia/(1).jpeg",
+            "familia/(2).jpeg",
+            "familia/(3).jpeg",
+            "familia/(4).jpeg",
+            "familia/(5).jpeg",
+            "familia/(6).jpeg",
+            "familia/(7).jpeg",
+            "familia/(8).jpeg",
+            "familia/(9).jpeg",
+            "familia/(10).jpeg",
+            "familia/(11).jpeg",
+            "familia/(12).jpeg",
+            "familia/(13).jpeg",
+            "familia/(14).jpeg",
+            "familia/(15).jpeg",
+            "familia/(16).jpeg",
+            "familia/(17).jpeg",
+            "familia/(18).jpeg",
+            "familia/(19).jpeg",
+              "familia/(20).jpeg",
+              "familia/(21).jpeg",
+              "familia/(22).jpeg",
+              "familia/(23).jpeg",
+              "familia/(24).jpeg",
+              "familia/(25).jpeg",
+              "familia/(26).jpeg",
+              "familia/(27).jpeg",
+              "familia/(28).jpeg",
+              "familia/(29).jpeg",
+              "familia/(30).jpeg",
+              "familia/(31).jpeg"
+          ],
+          carta:
+            "Simplemente nosotros tres... Gracias por construir conmigo este equipo tan increíble, por ser mi apoyo y por hacer que cada día sea un regalo.",
+        },
+      };
+      let pasoActual = 0;
+      let totalHojas = 0;
+
+      function abrirAlbum(id) {
+        const datos = miBiblioteca[id];
+        const reproductor = document.getElementById("reproductor-musica");
+        reproductor.src = datos.cancion;
+        reproductor.play().catch((e) => console.log("Clic para sonar"));
+
+        const contenedor = document.getElementById("libro-actual");
+        contenedor.innerHTML = "";
+        pasoActual = 0;
+
+        const hojasConfig = [];
+        hojasConfig.push({ fIz: "portada", fDe: datos.fotos[0] });
+
+        for (let i = 1; i < datos.fotos.length; i += 2) {
+          hojasConfig.push({
+            fIz: datos.fotos[i],
+            fDe: datos.fotos[i + 1] || "carta-final",
+          });
+        }
+        if (hojasConfig[hojasConfig.length - 1].fDe !== "carta-final") {
+          hojasConfig.push({ fIz: "vacio", fDe: "carta-final" });
+        }
+
+        hojasConfig.forEach((hoja, i) => {
+          const divHoja = document.createElement("div");
+          divHoja.className = "hoja";
+          divHoja.style.zIndex = hojasConfig.length - i;
+
+          divHoja.innerHTML = `
+            <div class="cara-delante ${hoja.fIz === "portada" ? "estilo-cuero" : ""}" style="${hoja.fIz === "portada" ? "background-color:" + datos.color : ""}">
+                ${
+                  hoja.fIz === "portada"
+                    ? `<div class="corazon-portada" style="top:15%; left:15%;">❤</div><h1 style="font-family:'Dancing Script'; font-size:2.8rem; padding: 20px;">${datos.titulo}</h1><p>Toca para empezar</p>`
+                    : hoja.fIz === "vacio"
+                      ? ""
+                      : `<div class="marco-foto">${crearWashi("w-top")}<img src="${hoja.fIz}">${crearWashi("w-bottom")}</div>`
+                }
+            </div>
+            <div class="cara-detras ${hoja.fDe === "carta-final" ? "estilo-cuero" : ""}" style="${hoja.fDe === "carta-final" ? "background-color:" + datos.color : ""}">
+                ${
+                  hoja.fDe === "carta-final"
+                    ? `<h2 style="font-family:'Dancing Script'; font-size:2.5rem">❤</h2><p style="padding:20px; font-size:1.1rem;">${datos.carta}</p>`
+                    : `<div class="marco-foto">${crearWashi("w-top")}<img src="${hoja.de || hoja.fDe}">${crearWashi("w-bottom")}</div>`
+                }
+            </div>`;
+
+          divHoja.onclick = (e) => {
+            e.stopPropagation();
+            if (i === pasoActual) irSiguiente();
+            else if (i === pasoActual - 1) irAtras();
+          };
+          contenedor.appendChild(divHoja);
+        });
+
+        totalHojas = hojasConfig.length;
+        document.getElementById("vista-estanteria").style.opacity = "0";
+        document.getElementById("vista-album").style.display = "flex";
+        document.getElementById("btn-volver").style.display = "block";
+      }
+
+      function irSiguiente() {
+        const hojas = document.querySelectorAll(".hoja");
+        if (pasoActual < totalHojas) {
+          hojas[pasoActual].classList.add("girada");
+          hojas[pasoActual].style.zIndex = pasoActual + 1;
+          pasoActual++;
+          if (pasoActual === totalHojas) dispararLluvia();
+        }
+      }
+
+      function irAtras() {
+        const hojas = document.querySelectorAll(".hoja");
+        if (pasoActual > 0) {
+          pasoActual--;
+          hojas[pasoActual].classList.remove("girada");
+          hojas[pasoActual].style.zIndex = totalHojas - pasoActual;
+        }
+      }
+
+      function dispararLluvia() {
+        for (let i = 0; i < 40; i++) {
+          const b = document.createElement("div");
+          b.className = "brillo";
+          b.innerText = ["✨", "🤍"][Math.floor(Math.random() * 2)];
+          b.style.left = Math.random() * 100 + "vw";
+          b.style.animationDelay = Math.random() * 2 + "s";
+          document.body.appendChild(b);
+          setTimeout(() => b.remove(), 9000);
+        }
+      }
+
+      function cerrarAlbum() {
+        const reproductor = document.getElementById("reproductor-musica");
+        reproductor.pause();
+        reproductor.currentTime = 0;
+        document.getElementById("vista-estanteria").style.opacity = "1";
+        document.getElementById("vista-album").style.display = "none";
+        document.getElementById("btn-volver").style.display = "none";
+      }
+    </script>
+  </body>
+</html>
