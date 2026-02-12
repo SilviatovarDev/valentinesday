@@ -2,6 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+
     <title>Nuestra Historia</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link
@@ -45,7 +46,8 @@
         border-radius: 20px;
         border: 2px solid var(--oro);
         text-align: center;
-        max-width: 400px;
+        width: 90%;
+        max-width: 900px;
       }
       .opcion-btn {
         display: block;
@@ -57,6 +59,7 @@
         color: white;
         cursor: pointer;
         font-family: inherit;
+        font-size: 3rem;
         transition: 0.3s;
       }
       .opcion-btn:hover {
@@ -221,8 +224,10 @@
       }
 
       .contenedor-libro-abierto {
-        width: 900px;
-        height: 600px;
+        width: 90vw; 
+        max-width: 900px;
+        height: 60vh;
+        max-height: 600px;
         position: relative;
         perspective: 2500px;
       }
@@ -233,7 +238,7 @@
 
       .hoja {
         box-shadow: 2px 2px 3px rgba(93, 91, 91, 0.174);
-        width: 450px;
+        width: 50%;
         height: 100%;
         position: absolute;
         right: 0;
@@ -241,6 +246,7 @@
         transform-style: preserve-3d;
         transition: transform 1.3s cubic-bezier(0.645, 0.045, 0.355, 1);
         cursor: pointer;
+        -webkit-transform-style: preserve-3d;
       }
 
       .cara-delante,
@@ -249,6 +255,8 @@
         width: 100%;
         height: 100%;
         backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        transform: translateZ(1px);
         padding: 40px;
         box-sizing: border-box;
         display: flex;
@@ -407,34 +415,67 @@
     <div id="pantalla-bloqueo">
       <div id="acceso-inicial" style="text-align: center">
         <h1
+          id="aviso"
           style="
             color: #ff4d4d;
             font-family: &quot;Courier New&quot;, monospace;
-            font-size: 1.5rem;
+            font-size: 3rem;
           "
         >
           ⚠️ AVISO DE SEGURIDAD ⚠️
         </h1>
         <p
+          id="text"
           style="
             color: white;
             margin: 20px 0;
-            font-family: sans-serif;
+            font-family:
+              &quot;Lucida Sans&quot;, &quot;Lucida Sans Regular&quot;,
+              &quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;,
+              Geneva, Verdana, sans-serif;
             line-height: 1.6;
+            font-size: 1.9rem;
           "
         >
           Acaba de acceder a una página de alto nivel de <br />
-          <strong style="color: var(--oro); font-size: 1.3rem">OXITOCINA</strong
+          <strong
+            id="oxitocina"
+            style="
+              color: var(--oro);
+              font-size: 1.9rem;
+              font-family:
+                &quot;Lucida Sans&quot;, &quot;Lucida Sans Regular&quot;,
+                &quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;,
+                Geneva, Verdana, sans-serif;
+            "
+            >OXITOCINA</strong
           ><br />
           (La hormona del amor)
         </p>
-        <p style="color: #aaa; font-size: 0.9rem">
+        <p
+          style="
+            color: #aaa;
+            font-size: 1.5rem;
+            font-family:
+              &quot;Lucida Sans&quot;, &quot;Lucida Sans Regular&quot;,
+              &quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;,
+              Geneva, Verdana, sans-serif;
+          "
+        >
           ¿Estás preparado para el nivel de exposición?
         </p>
         <button
           class="opcion-btn"
           onclick="iniciarSistema()"
-          style="margin-top: 20px; padding: 10px 30px"
+          style="
+            margin-top: 20px;
+            padding: 10px 30px;
+            font-size: 1.4rem;
+            font-family:
+              &quot;Lucida Sans&quot;, &quot;Lucida Sans Regular&quot;,
+              &quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;,
+              Geneva, Verdana, sans-serif;
+          "
         >
           ESTOY PREPARADO
         </button>
@@ -442,14 +483,14 @@
 
       <div id="contenedor-preguntas" style="display: none">
         <div class="pregunta-box">
-          <h2 id="txt-pregunta"></h2>
+          <h2 id="txt-pregunta" style="font-size: 2.6rem"></h2>
           <div id="opciones-contenedor"></div>
         </div>
       </div>
     </div>
 
     <div id="overlay-cronometro">
-      <h1>NUESTRO PRIMER AÑO LLEGARA EN...</h1>
+      <h1>NUESTRO PRIMER ANIVERSARIO LLEGA EN...</h1>
       <div id="timer" class="reloj-digital">00d 00h 00m 00s</div>
       <h1>¡TE AMO! ❤</h1>
       <button
@@ -516,8 +557,34 @@
     </div>
 
     <script>
-      window.onload = () => {
+      function precargarTodasLasImagenes() {
+        const imagenes = [];
+
+        // Recorremos todos los álbumes
+        Object.values(miBiblioteca).forEach((album) => {
+          album.fotos.forEach((src) => {
+            imagenes.push(src);
+          });
+        });
+
+        const promesas = imagenes.map((src) => {
+          return new Promise((resolve) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = resolve;
+            img.onerror = resolve; // evita bloqueos si falla alguna
+          });
+        });
+
+        return Promise.all(promesas);
+      }
+
+      window.onload = async () => {
         document.getElementById("vista-estanteria").style.display = "none";
+
+        await precargarTodasLasImagenes();
+
+        console.log("Imágenes precargadas ✅");
       };
 
       function iniciarSistema() {
@@ -570,7 +637,7 @@
                   text: "Has demostrado que lo sabes todo... ¿Quieres entrar por fin?",
                   imageUrl:
                     "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZuJmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3oz8xAFtqoNEAfRX7G/giphy.gif",
-                  imageWidth: 200,
+                  imageWidth: 300,
                   showCancelButton: true,
                   allowOutsideClick: false,
                   confirmButtonText: "¡SIIIIII, claro que sí!",
@@ -602,23 +669,40 @@
         estanteria.style.display = "flex";
         estanteria.style.opacity = "1";
       }
+      let intervaloCronometro = null;
+
       function verCronometro() {
         document.getElementById("overlay-cronometro").style.display = "flex";
+
         const meta = new Date("2026-04-17T00:00:00").getTime();
-        const actualizar = () => {
+
+        if (intervaloCronometro !== null) {
+          clearInterval(intervaloCronometro);
+        }
+
+        function actualizar() {
           const ahora = new Date().getTime();
           const diff = meta - ahora;
+
+          if (diff <= 0) {
+            document.getElementById("timer").innerText = "00d 00h 00m 00s";
+            clearInterval(intervaloCronometro);
+            return;
+          }
+
           const d = Math.floor(diff / (1000 * 60 * 60 * 24));
           const h = Math.floor(
             (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
           );
           const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
           const s = Math.floor((diff % (1000 * 60)) / 1000);
+
           document.getElementById("timer").innerText =
             `${d}d ${h}h ${m}m ${s}s`;
-        };
+        }
+
         actualizar();
-        setInterval(actualizar, 1000);
+        intervaloCronometro = setInterval(actualizar, 1000);
       }
 
       const coloresWashi = [
@@ -746,7 +830,6 @@
             "besos/b (31).jpeg",
             "besos/b (32).jpeg",
             "besos/b (33).jpeg",
-            "besos/b (34).jpeg",
           ],
           carta:
             "Dicen que hay besos que lo dicen todo,los mios dicen GRACIAS POR DEMOSTRARME TANTO ¡Por un millón de besos más!",
@@ -756,7 +839,6 @@
           titulo: "Cada momento contigo es especial..",
           cancion: "music/momentos.mp3",
           fotos: [
-            "momentos/d (1).jpeg",
             "momentos/d (2).jpeg",
             "momentos/d (3).jpeg",
             "momentos/d (4).jpeg",
@@ -846,7 +928,6 @@
             "familia/a (26).webp",
             "familia/a (27).webp",
             "familia/a (28).webp",
-            "familia/a (29).webp",
             "familia/a (30).webp",
             "familia/a (31).webp",
           ],
@@ -854,11 +935,37 @@
             "Simplemente nosotros tres... Gracias por construir conmigo este equipo tan increíble, por ser mi apoyo y por hacer que cada día sea un regalo.",
         },
       };
+
+      function precargarImagenes(lista) {
+        const promesas = [];
+
+        lista.forEach((src) => {
+          const img = new Image();
+          img.src = src;
+
+          promesas.push(
+            new Promise((resolve) => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            }),
+          );
+        });
+
+        return Promise.all(promesas);
+      }
+
       let pasoActual = 0;
       let totalHojas = 0;
 
-      function abrirAlbum(id) {
+      async function abrirAlbum(id) {
+        if (!miBiblioteca[id]) {
+          console.error("Álbum no encontrado:", id);
+          return;
+        }
         const datos = miBiblioteca[id];
+        document.body.style.cursor = "wait";
+        await precargarImagenes(datos.fotos);
+        document.body.style.cursor = "default";
         const reproductor = document.getElementById("reproductor-musica");
         reproductor.src = datos.cancion;
         reproductor.play().catch((e) => console.log("Clic para sonar"));
@@ -899,7 +1006,7 @@
                 ${
                   hoja.fDe === "carta-final"
                     ? `<h2 style="font-family:'Dancing Script'; font-size:2.5rem">❤</h2><p style="padding:20px; font-size:1.1rem;">${datos.carta}</p>`
-                    : `<div class="marco-foto">${crearWashi("w-top")}<img src="${hoja.de || hoja.fDe}">${crearWashi("w-bottom")}</div>`
+                    : `<div class="marco-foto">${crearWashi("w-top")}<img src="${hoja.fDe}">${crearWashi("w-bottom")}</div>`
                 }
             </div>`;
 
